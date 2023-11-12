@@ -20,7 +20,7 @@ let string_of_base (b : base) : string =
 
 (* explode a string into a char list *)
 let explode (str : string) : char list =
-  failwith "À compléter"
+  List.init (String.length str) (String.get str)
 
 
 (* conversions *)
@@ -34,12 +34,12 @@ let base_of_char (c : char) : base =
 
 
 let dna_of_string (s : string) : base list =
-  failwith "À compléter"
+  List.map base_of_char (explode s)
 
 
 let string_of_dna (seq : dna) : string =
   match seq with
-  | [] -> failwith "L'ADN EST VIDE"
+  | [] -> ""
   | _  -> String.concat "" (List.map string_of_base seq)
 
 
