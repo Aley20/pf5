@@ -54,8 +54,16 @@ let string_of_dna (seq : dna) : string =
 
 
 (* if list = pre@suf, return Some suf. otherwise, return None *)
-let cut_prefix (slice : 'a list) (list : 'a list) : 'a list option =
-  failwith "A faire"
+
+(* 1er cas : Si slice est vide alors list est un suffixe
+   2eme cas : Si 1er élément de slice(x1) est égal au 1er élément de list(x2) alors on va réappeler récursivement
+              cut_prefix avec le reste de slice(y1) et list(y2) jusqu'a ce que l'une des deux listes soit entiérement parcourus
+   3eme cas : Sinon (si la liste pre n’est pas un préfixe de l) on renvoie None *)
+let rec cut_prefix (slice : 'a list) (list : 'a list) : 'a list option =
+  match (slice,list) with 
+  | ([],suf) -> Some suf 
+  | (x1 :: y1, x2 :: y2) when x1=x2 -> cut_prefix y1 y2 
+  | (_,_) -> None
 
 (*
   cut_prefix [1; 2; 3] [1; 2; 3; 4] = Some [4]
