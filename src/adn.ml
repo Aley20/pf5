@@ -86,8 +86,9 @@ let first_occ (slice : 'a list) (list : 'a list)
 
 
 let rec slices_between
-          (start : 'a list) (stop : 'a list) (list : 'a list) : 'a list list =
-  failwith "A faire"
+  (start : 'a list) (stop : 'a list) (list : 'a list) : 'a list list =
+  failwith "À compléter"
+  
 
 (*
   slices_between [1; 1] [1; 2] [1; 1; 1; 1; 2; 1; 3; 1; 2] = [[1]; []; [2; 1; 3]]
@@ -107,8 +108,36 @@ type 'a consensus = Full of 'a | Partial of 'a * int | No_consensus
    (Partial (a, n)) if a is the only element of the list with the
    greatest number of occurrences and this number is equal to n,
    No_consensus otherwise. *)
-let consensus (list : 'a list) : 'a consensus =
-  failwith "À compléter"
+
+let rec count_occ x l =
+  match l with 
+  | [] -> 0
+  | hd :: tl -> if hd==x then 1+count_occ x tl else count_occ x tl
+
+
+  let max_occ l =
+    let max_occs = ref 0 in
+    let rec check_all_occ list = 
+      match list with
+      | [] -> true
+      | hd :: tl ->
+        let x = count_occ hd l in
+        if  x > !max_occs then max_occs := x;
+        x = !max_occs && check_all_occ tl
+    in
+    if check_all_occ l then 0
+    else !max_occs
+  
+  
+let rec consensus (list : 'a list) : 'a consensus =
+  match list with
+  | [] -> No_consensus
+  | hd :: tl -> 
+    let x= count_occ hd list in
+    let y=max_occ list in
+    if x=List.length list then Full hd 
+    else if y=0 then No_consensus else if y>0 then Partial (hd,y) else consensus tl
+
 
 (*
    consensus [1; 1; 1; 1] = Full 1
@@ -122,9 +151,17 @@ let consensus (list : 'a list) : 'a consensus =
    are empty, return the empty sequence.
  *)
 
-let consensus_sequence (ll : 'a list list) : 'a consensus list =
-  failwith "À compléter"
+let rec consensus_sequence (ll : 'a list list) : 'a consensus list = 
+  match ll with
+  | [] -> []
+  | hd :: tl -> [consensus hd]@consensus_sequence tl
 
+let p=consensus_sequence [[1; 1; 1; 1];
+[1; 1; 1; 2];
+[1; 1; 2; 2];
+[1; 2; 2; 2]]
+
+let m=consensus_sequence[['a';'c';'g';'t']]
 (*
  consensus_sequence [[1; 1; 1; 1];
                      [1; 1; 1; 2];
