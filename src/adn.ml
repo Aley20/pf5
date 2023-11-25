@@ -109,34 +109,76 @@ type 'a consensus = Full of 'a | Partial of 'a * int | No_consensus
    greatest number of occurrences and this number is equal to n,
    No_consensus otherwise. *)
 
-let rec count_occ x l =
-  match l with 
-  | [] -> 0
-  | hd :: tl -> if hd==x then 1+count_occ x tl else count_occ x tl
+   let rec count_occ x l= 
+    match l with
+    | [] -> 0
+    | hd :: tl -> (if hd = x then 1 else 0) + count_occ x tl
+  
+   let max_occurrence_info lst =
+  let rec aux max_count occurrences_list = function
+  | [] -> occurrences_list
+  | hd :: tl ->
+      let occurrences = count_occ hd lst in
+      if occurrences > max_count then
+        aux occurrences [(hd, occurrences)] tl
+      else if occurrences = max_count && not (List.exists (fun (x, _) -> x = hd) occurrences_list) then
+        aux max_count ((hd, occurrences) :: occurrences_list) tl
+      else
+        aux max_count occurrences_list tl
+in
+match lst with
+| [] -> failwith "Empty list"
+| _ ->
+  let max_occurrences_list = aux 0 [] lst in
+  match max_occurrences_list with
+  | [] -> [(List.hd lst, 0)]
+  | _ -> List.rev max_occurrences_list;;
 
 
-  let max_occ l =
-    let max_occs = ref 0 in
-    let rec check_all_occ list = 
-      match list with
-      | [] -> true
-      | hd :: tl ->
-        let x = count_occ hd l in
-        if  x > !max_occs then max_occs := x;
-        x = !max_occs && check_all_occ tl
-    in
-    if check_all_occ l then 0
-    else !max_occs
-  
-  
+(*
+   type base = A | C | G | T | WC (* wildcard *)
+
+let a= max_occurrence_info ['a';'b';'c';'c';'b';'a']
+let b=max_occurrence_info [A; A; G; G; T] 
+*)
+
+(* Accéder à 'a' dans la paire ('a', 2) *)
+
+let sort_and_check_max lst =
+  let sorted_list = List.sort (fun (_, count1) (_, count2) -> compare count1 count2) lst in
+  match sorted_list with
+  | [] -> [(Obj.magic 0,0)]
+  | [(x, count)] -> [(x, count)]
+  | (x1, count1) :: (x2, count2) :: tl ->
+      if count1 = count2 then [(x1, 0)]
+      else [(x1, count1)]
+;;
+
+(* Utilisation *)
+(*
+let result = sort_and_check_max a;;
+let res = sort_and_check_max b
+*)
+
 let rec consensus (list : 'a list) : 'a consensus =
   match list with
   | [] -> No_consensus
-  | hd :: tl -> 
-    let x= count_occ hd list in
-    let y=max_occ list in
-    if x=List.length list then Full hd 
-    else if y=0 then No_consensus else if y>0 then Partial (hd,y) else consensus tl
+  | [x] -> Full x
+  | hd :: tl -> let max=max_occurrence_info list in
+      match sort_and_check_max max with 
+      | [] -> No_consensus
+      | [(value,1)] -> Full value
+      | [(value,count)] -> if count = List.length list then Full value else if count=0 then No_consensus else Partial (value,count)
+      | _ -> No_consensus
+
+
+(*
+let r=consensus ['a';'b';'c';'c';'b';'a']
+let rr=consensus ['a';'a';'a';'a';'a';'a']
+let rrr=consensus [C; C; T; C] 
+let  rrrr=consensus [A; A; G; G; T] 
+let  rrrrr=consensus [] 
+*)
 
 
 (*
@@ -151,23 +193,45 @@ let rec consensus (list : 'a list) : 'a consensus =
    are empty, return the empty sequence.
  *)
 
-let rec consensus_sequence (ll : 'a list list) : 'a consensus list = 
-  match ll with
-  | [] -> []
-  | hd :: tl -> [consensus hd]@consensus_sequence tl
+    
+    let transpose_lists lst =
+      let rec transpose_aux acc = function
+        | [] -> List.rev acc
+        | [] :: _ -> List.rev acc
+        | lists -> transpose_aux (List.map List.hd lists :: acc) (List.map List.tl lists)
+      in
+      transpose_aux [] lst
+    
+    (* Utilisation *)
+    (*let input_list = [["x0"; "x1"; "x2"]; ["y0"; "y1"; "y2"]; ["z0"; "z1"; "z2"]];;
+    let i=[["a";"c";"g";"t"]]
+    let rr=transpose_lists i
+    let result = transpose_lists input_list;;*)
 
-let p=consensus_sequence [[1; 1; 1; 1];
-[1; 1; 1; 2];
-[1; 1; 2; 2];
-[1; 2; 2; 2]]
+    let rec consensus_sequence (ll : 'a list list) : 'a consensus list =
+      let transposed_lists = transpose_lists ll in
+      let rec process_columns acc = function
+        | [] -> List.rev acc
+        | col :: cols -> process_columns (consensus col :: acc) cols
+      in
+      process_columns [] transposed_lists
+    ;;
+    
 
-let m=consensus_sequence[['a';'c';'g';'t']]
-(*
- consensus_sequence [[1; 1; 1; 1];
-                     [1; 1; 1; 2];
-                     [1; 1; 2; 2];
-                     [1; 2; 2; 2]]
+  (*let c=consensus ["a"]
+  let a=transpose_lists [["a";"c";"g";"t"]]
+  let e=consensus_sequence [["a";"c";"g";"t"]]
+  let aa=transpose_lists [["a";"a";"a";"a"];["a";"a";"a";"t"];["a";"a";".";"."]]
+  let ee=consensus_sequence [["a";"a";"a";"a"];["a";"a";"a";"t"];["a";"a";".";"."]]
+  *)
+                     (*
  = [Full 1; Partial (1, 3); No_consensus; Partial (2, 3)]
 
  consensus_sequence [[]; []; []] = []
  *)
+
+(* Utilisation *)
+(*let input_list = [["x0x1x2"]; ["y0y1y2"]; ["z0z1z2"]];;
+let result = transpose_lists input_list;;
+*)
+
