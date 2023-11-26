@@ -109,30 +109,29 @@ type 'a consensus = Full of 'a | Partial of 'a * int | No_consensus
    greatest number of occurrences and this number is equal to n,
    No_consensus otherwise. *)
 
+   (* Compte occurence de l'élémént x *)
    let rec count_occ x l= 
     match l with
     | [] -> 0
     | hd :: tl -> (if hd = x then 1 else 0) + count_occ x tl
   
-   let max_occurrence_info lst =
-  let rec aux max_count occurrences_list = function
-  | [] -> occurrences_list
-  | hd :: tl ->
-      let occurrences = count_occ hd lst in
-      if occurrences > max_count then
-        aux occurrences [(hd, occurrences)] tl
-      else if occurrences = max_count && not (List.exists (fun (x, _) -> x = hd) occurrences_list) then
-        aux max_count ((hd, occurrences) :: occurrences_list) tl
-      else
-        aux max_count occurrences_list tl
-in
-match lst with
-| [] -> failwith "Empty list"
-| _ ->
-  let max_occurrences_list = aux 0 [] lst in
-  match max_occurrences_list with
-  | [] -> [(List.hd lst, 0)]
-  | _ -> List.rev max_occurrences_list;;
+  (* va renvoyer sous forme de liste de tuple (a * int) tous les éléments de la liste avec leurs occurrences (element,occurence)*)
+  let list_occurrence lst =
+    let rec aux acc = function (* ajoute les tuples (élément, nombre d'occurrences) dans la liste acc.*)
+      | [] -> acc
+      | hd :: tl ->
+        let count = count_occ hd lst in
+        aux ((hd, count) :: acc) tl
+    in
+    match lst with
+    | [] -> failwith "Empty list"
+    | _ ->
+      let result = aux [] lst in
+      List.fold_left (fun acc (x, _) -> (* List.fold_left nécessaire nécessaire pour construire la liste final*)
+        (* on verifie si x est deja dans le tuple , si c'est le cas on fait rien sinon on ajoute un nouveau tuple dans notre liste acc *)
+        if not (List.exists (fun (y, _) -> x = y) acc) then (x, count_occ x lst) :: acc
+        else acc
+      ) [] result
 
 
 (*
@@ -142,45 +141,32 @@ let a= max_occurrence_info ['a';'b';'c';'c';'b';'a']
 let b=max_occurrence_info [A; A; G; G; T] 
 *)
 
-(* Accéder à 'a' dans la paire ('a', 2) *)
+(* va trié notre liste de tuples  *)
 
-let sort_and_check_max lst =
-  let sorted_list = List.sort (fun (_, count1) (_, count2) -> compare count1 count2) lst in
+let trie_list_tuples lst =
+  let sorted_list = List.sort (fun (_, count2) (_, count1) -> compare count1 count2) lst in (* trie notre liste de tuples lst*)
   match sorted_list with
   | [] -> [(Obj.magic 0,0)]
-  | [(x, count)] -> [(x, count)]
+  | [(x, count)] -> [(x, count)] 
   | (x1, count1) :: (x2, count2) :: tl ->
-      if count1 = count2 then [(x1, 0)]
+      if count1 = count2 then [(x1, 0)] 
       else [(x1, count1)]
 ;;
-
-(* Utilisation *)
-(*
-let result = sort_and_check_max a;;
-let res = sort_and_check_max b
-*)
 
 let rec consensus (list : 'a list) : 'a consensus =
   match list with
   | [] -> No_consensus
   | [x] -> Full x
-  | hd :: tl -> let max=max_occurrence_info list in
-      match sort_and_check_max max with 
+  | hd :: tl -> let l_occ=list_occurrence list in
+      match trie_list_tuples l_occ with 
       | [] -> No_consensus
-      | [(value,1)] -> Full value
       | [(value,count)] -> if count = List.length list then Full value else if count=0 then No_consensus else Partial (value,count)
       | _ -> No_consensus
 
-
-(*
-let r=consensus ['a';'b';'c';'c';'b';'a']
-let rr=consensus ['a';'a';'a';'a';'a';'a']
-let rrr=consensus [C; C; T; C] 
-let  rrrr=consensus [A; A; G; G; T] 
-let  rrrrr=consensus [] 
+(*let u=max_occurrence_info ['a';'b';'a';'c';'c';'a']
+let s=sort_and_check_max u
+let p=consensus ['a';'b';'a';'c';'c';'a']
 *)
-
-
 (*
    consensus [1; 1; 1; 1] = Full 1
    consensus [1; 1; 1; 2] = Partial (1, 3)
@@ -193,7 +179,8 @@ let  rrrrr=consensus []
    are empty, return the empty sequence.
  *)
 
-    
+    (* pour une liste [["x0"; "x1"; "x2"]; ["y0"; "y1"; "y2"]; ["z0"; "z1"; "z2"]] la fonction transpose_lists va donner 
+       [["x0"; "y0"; "z0"]; ["x1"; "y1"; "z1"]; ["x2"; "y2"; "z2"]]*)
     let transpose_lists lst =
       let rec transpose_aux acc = function
         | [] -> List.rev acc
@@ -212,7 +199,7 @@ let  rrrrr=consensus []
       let transposed_lists = transpose_lists ll in
       let rec process_columns acc = function
         | [] -> List.rev acc
-        | col :: cols -> process_columns (consensus col :: acc) cols
+        | hd :: tl -> process_columns (consensus hd :: acc) tl
       in
       process_columns [] transposed_lists
     ;;
