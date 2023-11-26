@@ -86,20 +86,56 @@ let rec first_occ slice l =
       else
         loop (i + 1)
     else
-      failwith "None"
+      ([],[],[])
   in
   loop 0
+  (*let () =
+  let slice = ['A'; 'G'] in
+  let l = ['A'; 'A'; 'A'; 'G'; 'T'; 'C'; 'A'; 'A'; 'A'; 'G'; 'T'; 'C'] in
+
+  Printf.printf "Original list: [%s]\n" (String.concat "; " (List.map Char.escaped l));
+
+  let before, removed, after = first_occ slice l in
+
+  Printf.printf "([%s][%s])\n" (String.concat "; " (List.map Char.escaped before)) (String.concat "; " (List.map Char.escaped after))
+    
+    *)
 (*
   first_occ [1; 2] [1; 1; 1; 2; 3; 4; 1; 2] = Some ([1; 1], [3; 4; 1; 2])
   first_occ [1; 1] [1; 1; 1; 2; 3; 4; 1; 2] = Some ([], [1; 2; 3; 4; 1; 2])
   first_occ [1; 3] [1; 1; 1; 2; 3; 4; 1; 2] = None
  *)
 
-
+let extraire_liste start stop l acc =
+  try
+    let (_, _, remaining_after_start) = first_occ start l in
+    let (between, _, _) = first_occ stop remaining_after_start in
+    acc := !acc @ [between];  (* ajouter la liste de caractères à l'accumulation *)
+    remaining_after_start
+  with Not_found -> []
+  let rec slices_between_ter start stop l acc =
+  if List.length l < (List.length start + List.length stop) then
+    !acc  
+  else
+    let remaining = extraire_liste start stop l acc in
+    slices_between_ter start stop remaining acc
 let rec slices_between
           (start : 'a list) (stop : 'a list) (list : 'a list) : 'a list list =
-  failwith "A faire"
+   if List.length l<List.length start+List.length stop then failwith"La liste est courte" else
+    match l with
+    |[]->failwith "La liste est vide"
+    |_->slices_between_ter start stop l (ref [])
+(* Test 
+let () =
+  let start = ['A'; 'G'] in
+  let stop = ['T'; 'C'] in
+  let l = ['A'; 'A'; 'A'; 'G'; 'A'; 'T'; 'C'; 'A'; 'A'; 'A';'C'; 'A'; 'G';'C'; 'A'; 'T'; 'C'] in
 
+  Printf.printf "Original list: [%s]\n" (String.concat "; " (List.map Char.escaped l));
+
+  let result = slices_between start stop l in
+  Printf.printf "Slices between start and stop: [%s]\n"
+    (String.concat "; " (List.map (fun sublist -> "[" ^ (String.concat "; " (List.map Char.escaped sublist)) ^ "]") result))*)
 (*
   slices_between [1; 1] [1; 2] [1; 1; 1; 1; 2; 1; 3; 1; 2] = [[1]; []; [2; 1; 3]]
  *)
