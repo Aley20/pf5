@@ -141,7 +141,24 @@ let () =
  *)
 
 let cut_genes (dna : dna) : (dna list) =
-  failwith "A faire"
+  
+let cut_genes (strand : dna) : string list =
+  if List.length strand = 0 then
+    failwith "None"
+  else
+    let start = [A; T; G] in
+    let stop = [T; A; A] in 
+    let gene_lists = slices_between start stop strand in
+    List.map string_of_dna gene_lists
+(*test
+let () = 
+  let strand = dna_of_string "ATGCCTGGGCATTGAGATCATTGGCACCCTGCATAAGATGTGTGACTGTAGAGCTCTTCCTGAC..CATGCATAAAGAATGCCAATGGCACAGCCTGGTATCTTTGCCATAAATGGCTCCTGGTGGAGCTGATAGTCACTTTCCATAATTAATGCATGGTGGTGGAGTTATTCTTGACTTTCCATAA" in 
+  (* Appel à la fonction cut_genes *)
+  let genes_as_dna = cut_genes strand in 
+  (* affichage des gènes sous forme de séquences d'ADN *)
+  Printf.printf "Genes as DNA sequences: [%s]\n"
+    (String.concat "; \n" genes_as_dna);
+  *)
 
 (*---------------------------------------------------------------------------*)
 (*                          CONSENSUS SEQUENCES                              *)
