@@ -114,7 +114,7 @@ let rec first_occ slice l =
   first_occ [1; 3] [1; 1; 1; 2; 3; 4; 1; 2] = None
  *)
 
-let extraire_liste start stop l acc =
+(*let extraire_liste start stop l acc =
   try
     let (_, _, remaining_after_start) = first_occ start l in
     let (between, _, _) = first_occ stop remaining_after_start in
@@ -127,12 +127,15 @@ let extraire_liste start stop l acc =
   else
     let remaining = extraire_liste start stop l acc in
     slices_between_ter start stop remaining acc
+
+    *)
 let rec slices_between
           (start : 'a list) (stop : 'a list) (list : 'a list) : 'a list list =
-   if List.length l<List.length start+List.length stop then failwith "La liste est courte"  else 
+  if List.length l<List.length start+List.length stop then failwith "La liste est courte"  else 
     match l with
     |[]->failwith "La liste est vide"
     |_->slices_between_ter start stop l (ref [])
+    
 (* Test 
 let () =
   let start = ['A'; 'G'] in
