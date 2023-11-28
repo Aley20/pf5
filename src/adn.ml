@@ -130,7 +130,7 @@ let rec first_occ slice l =
 
     *)
 let rec slices_between
-          (start : 'a list) (stop : 'a list) (list : 'a list) : 'a list list =
+          (start : 'a list) (stop : 'a list) (l : 'a list) : 'a list list =
   if List.length l<List.length start+List.length stop then failwith "La liste est courte"  else 
     match l with
     |[]->failwith "La liste est vide"
