@@ -90,7 +90,7 @@ let first_occ slice l =
       let before, after = split_at_position i l in
       let removed, after = split_at_position (List.length slice) after in
       if removed = slice then
-        Some (before, after)
+        Some (before, removed, after)
       else
         loop (i + 1)
     else
@@ -103,12 +103,12 @@ let first_occ slice l =
   first_occ [1; 3] [1; 1; 1; 2; 3; 4; 1; 2] = None
  *)
 let extraire_liste start stop l acc =
-  try
-    let (_, _, remaining_after_start) = first_occ start l in
+ try
+    let (_, slice, remaining_after_start) = first_occ start l in
     let (between, _, _) = first_occ stop remaining_after_start in
-    acc := !acc @ [between];  (* ajouter la liste de caractères à l'accumulation *)
+    acc := !acc @ [between]; (* ajouter la liste de caractères à l'accumulation *)
     remaining_after_start
-  with Not_found -> []
+ with Not_found -> []
 
 let rec slices_between_ter start stop l acc =
   if List.length l < (List.length start + List.length stop) then
