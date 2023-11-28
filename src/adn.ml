@@ -114,7 +114,7 @@ let rec first_occ slice l =
   first_occ [1; 3] [1; 1; 1; 2; 3; 4; 1; 2] = None
  *)
 
-(*let extraire_liste start stop l acc =
+let extraire_liste start stop l acc =
   try
     let (_, _, remaining_after_start) = first_occ start l in
     let (between, _, _) = first_occ stop remaining_after_start in
@@ -128,7 +128,7 @@ let rec first_occ slice l =
     let remaining = extraire_liste start stop l acc in
     slices_between_ter start stop remaining acc
 
-    *)
+    
 let rec slices_between
           (start : 'a list) (stop : 'a list) (l : 'a list) : 'a list list =
   if List.length l<List.length start+List.length stop then failwith "La liste est courte"  else 
@@ -162,9 +162,9 @@ let cut_genes (strand : dna) : string list =
 (*test
 let () = 
   let strand = dna_of_string "ATGCCTGGGCATTGAGATCATTGGCACCCTGCATAAGATGTGTGACTGTAGAGCTCTTCCTGAC..CATGCATAAAGAATGCCAATGGCACAGCCTGGTATCTTTGCCATAAATGGCTCCTGGTGGAGCTGATAGTCACTTTCCATAATTAATGCATGGTGGTGGAGTTATTCTTGACTTTCCATAA" in 
-  (* Appel à la fonction cut_genes *)
+   Appel à la fonction cut_genes 
   let genes_as_dna = cut_genes strand in 
-  (* affichage des gènes sous forme de séquences d'ADN *)
+   affichage des gènes sous forme de séquences d'ADN 
   Printf.printf "Genes as DNA sequences: [%s]\n"
     (String.concat "; \n" genes_as_dna);
   *)
@@ -202,7 +202,7 @@ type 'a consensus = Full of 'a | Partial of 'a * int | No_consensus
         (* on verifie si x est deja dans le tuple , si c'est le cas on fait rien sinon on ajoute un nouveau tuple dans notre liste acc *)
         if not (List.exists (fun (y, _) -> x = y) acc) then (x, count_occ x lst) :: acc
         else acc
-      ) [] result
+        [] result
 
 
 (*
