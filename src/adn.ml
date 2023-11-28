@@ -97,11 +97,6 @@ let first_occ slice l =
       None
  in
  loop 0
-(*
- first_occ [1; 2] [1; 1; 1; 2; 3; 4; 1; 2] = Some ([1; 1], [3; 4; 1; 2])
- first_occ [1; 1] [1; 1; 1; 2; 3; 4; 1; 2] = Some ([], [1; 2; 3; 4; 1; 2])
- first_occ [1; 3] [1; 1; 1; 2; 3; 4; 1; 2] = None
- *)
 
 let rec extraire_liste start stop l acc =
  match first_occ start l with
