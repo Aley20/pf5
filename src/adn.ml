@@ -202,7 +202,7 @@ type 'a consensus = Full of 'a | Partial of 'a * int | No_consensus
         (* on verifie si x est deja dans le tuple , si c'est le cas on fait rien sinon on ajoute un nouveau tuple dans notre liste acc *)
         if not (List.exists (fun (y, _) -> x = y) acc) then (x, count_occ x lst) :: acc
         else acc
-        [] result
+        )[] result
 
 
 (*
