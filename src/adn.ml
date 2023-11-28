@@ -83,31 +83,20 @@ let split_at_position pos lst =
         else aux (h :: acc) (n - 1) t
   in
   aux [] pos lst
-
-let rec first_occ slice l =
-  let rec loop i =
+  
+let first_occ slice l =
+ let rec loop i =
     if List.length slice + i <= List.length l then
       let before, after = split_at_position i l in
       let removed, after = split_at_position (List.length slice) after in
       if removed = slice then
-        (before, removed, after)
+        Some (before, after)
       else
         loop (i + 1)
     else
-      ([],[],[])
-  in
-  loop 0
-  (*let () =
-  let slice = ['A'; 'G'] in
-  let l = ['A'; 'A'; 'A'; 'G'; 'T'; 'C'; 'A'; 'A'; 'A'; 'G'; 'T'; 'C'] in
-
-  Printf.printf "Original list: [%s]\n" (String.concat "; " (List.map Char.escaped l));
-
-  let before, removed, after = first_occ slice l in
-
-  Printf.printf "([%s][%s])\n" (String.concat "; " (List.map Char.escaped before)) (String.concat "; " (List.map Char.escaped after))
-    
-    *)
+      None
+ in
+ loop 0
 (*
   first_occ [1; 2] [1; 1; 1; 2; 3; 4; 1; 2] = Some ([1; 1], [3; 4; 1; 2])
   first_occ [1; 1] [1; 1; 1; 2; 3; 4; 1; 2] = Some ([], [1; 2; 3; 4; 1; 2])
