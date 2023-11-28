@@ -102,7 +102,6 @@ let first_occ slice l =
   first_occ [1; 1] [1; 1; 1; 2; 3; 4; 1; 2] = Some ([], [1; 2; 3; 4; 1; 2])
   first_occ [1; 3] [1; 1; 1; 2; 3; 4; 1; 2] = None
  *)
-
 let extraire_liste start stop l acc =
   try
     let (_, _, remaining_after_start) = first_occ start l in
@@ -110,17 +109,16 @@ let extraire_liste start stop l acc =
     acc := !acc @ [between];  (* ajouter la liste de caractères à l'accumulation *)
     remaining_after_start
   with Not_found -> []
-  let rec slices_between_ter start stop l acc =
+
+let rec slices_between_ter start stop l acc =
   if List.length l < (List.length start + List.length stop) then
     !acc  
   else
     let remaining = extraire_liste start stop l acc in
     slices_between_ter start stop remaining acc
 
-    
-let rec slices_between
-          (start : 'a list) (stop : 'a list) (l : 'a list) : 'a list list =
-  if List.length l<List.length start+List.length stop then failwith "La liste est courte"  else 
+let slices_between start stop l =
+  if List.length l<List.length start+List.length stop then failwith"La liste est courte" else
     match l with
     |[]->failwith "La liste est vide"
     |_->slices_between_ter start stop l (ref [])
