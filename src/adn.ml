@@ -102,15 +102,17 @@ let first_occ slice l =
   first_occ [1; 1] [1; 1; 1; 2; 3; 4; 1; 2] = Some ([], [1; 2; 3; 4; 1; 2])
   first_occ [1; 3] [1; 1; 1; 2; 3; 4; 1; 2] = None
  *)
-let rec extraire_liste start stop l acc =
+
+
+let rec slices_between start stop l =
+    let rec extraire_liste start stop l acc =
  try
     let (_, slice, remaining_after_start) = first_occ start l in
     let (between, _, _) = first_occ stop remaining_after_start in
     acc := !acc @ [between]; (* ajouter la liste de caractères à l'accumulation *)
     remaining_after_start
  with Not_found -> []
-
-let rec slices_between start stop l =
+ in
  match l with
  | [] -> []
  | _ ->
