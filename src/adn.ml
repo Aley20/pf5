@@ -76,13 +76,13 @@ let rec cut_prefix (slice : 'a list) (list : 'a list) : 'a list option =
    or None if this occurrence does not exist.
 *)
 let split_at_position pos lst =
-  let rec aux acc n = function
+ let rec aux acc n = function
     | [] -> (List.rev acc, [])
     | h :: t as l ->
         if n = 0 then (List.rev acc, l)
         else aux (h :: acc) (n - 1) t
-  in
-  aux [] pos lst
+ in
+ aux [] pos lst
   
 let first_occ slice l =
  let rec loop i =
@@ -98,28 +98,28 @@ let first_occ slice l =
  in
  loop 0
 (*
-  first_occ [1; 2] [1; 1; 1; 2; 3; 4; 1; 2] = Some ([1; 1], [3; 4; 1; 2])
-  first_occ [1; 1] [1; 1; 1; 2; 3; 4; 1; 2] = Some ([], [1; 2; 3; 4; 1; 2])
-  first_occ [1; 3] [1; 1; 1; 2; 3; 4; 1; 2] = None
+ first_occ [1; 2] [1; 1; 1; 2; 3; 4; 1; 2] = Some ([1; 1], [3; 4; 1; 2])
+ first_occ [1; 1] [1; 1; 1; 2; 3; 4; 1; 2] = Some ([], [1; 2; 3; 4; 1; 2])
+ first_occ [1; 3] [1; 1; 1; 2; 3; 4; 1; 2] = None
  *)
 
+let rec extraire_liste start stop l acc =
+ match first_occ start l with
+ | None -> []
+ | Some (before, _, after) ->
+    match first_occ stop after with
+    | None -> []
+    | Some (_, between, after) ->
+      acc := !acc @ [between];
+      after
 
 let rec slices_between start stop l =
-    let rec extraire_liste start stop l acc =
- try
-    let (_, slice, remaining_after_start) = first_occ start l in
-    let (between, _, _) = first_occ stop remaining_after_start in
-    acc := !acc @ [between]; (* ajouter la liste de caractères à l'accumulation *)
-    remaining_after_start
- with Not_found -> []
- in
  match l with
  | [] -> []
  | _ ->
-   let result = ref [] in
-   let remaining = extraire_liste start stop l result in
-   if remaining = [] then !result else !result @ slices_between start stop remaining
-
+    let result = ref [] in
+    let remaining = extraire_liste start stop l result in
+    if remaining = [] then !result else !result @ slices_between start stop remaining
     
 (* Test 
 let () =
