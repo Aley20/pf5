@@ -75,80 +75,101 @@ let rec cut_prefix (slice : 'a list) (list : 'a list) : 'a list option =
 (* return the prefix and the suffix of the first occurrence of a slice,
    or None if this occurrence does not exist.
 *)
+
 let split_at_position pos lst =
- let rec aux acc n = function
+  let rec aux acc n = function
     | [] -> (List.rev acc, [])
     | h :: t as l ->
         if n = 0 then (List.rev acc, l)
         else aux (h :: acc) (n - 1) t
- in
- aux [] pos lst
-  
+  in
+  aux [] pos lst
+
 let first_occ slice l =
- let rec loop i =
+  let rec loop i =
     if List.length slice + i <= List.length l then
       let before, after = split_at_position i l in
       let removed, after = split_at_position (List.length slice) after in
       if removed = slice then
-        Some (before, removed, after)
+        Some (before, after)
       else
         loop (i + 1)
     else
       None
- in
- loop 0
+  in
+  loop 0
 
-let rec extraire_liste start stop l acc =
- match first_occ start l with
- | None -> []
- | Some (before, _, after) ->
-    match first_occ stop after with
-    | None -> []
-    | Some (_, between, after) ->
-      acc := !acc @ [between];
-      after
-
-let rec slices_between start stop l =
- match l with
- | [] -> []
- | _ ->
-    let result = ref [] in
-    let remaining = extraire_liste start stop l result in
-    if remaining = [] then !result else !result @ slices_between start stop remaining
-    
-(* Test 
-let () =
-  let start = ['A'; 'G'] in
-  let stop = ['T'; 'C'] in
-  let l = ['A'; 'A'; 'A'; 'G'; 'A'; 'T'; 'C'; 'A'; 'A'; 'A';'C'; 'A'; 'G';'C'; 'A'; 'T'; 'C'] in
+(*let () =
+  let slice = ['A'; 'G'] in
+  let l = ['A'; 'A'; 'A'; 'G'; 'T'; 'C'; 'A'; 'A'; 'A'; 'G'; 'T'; 'C'] in
 
   Printf.printf "Original list: [%s]\n" (String.concat "; " (List.map Char.escaped l));
 
+  match first_occ slice l with
+  | Some (before, after) ->
+      Printf.printf "([%s][%s])\n"
+        (String.concat "; " (List.map Char.escaped before))
+        (String.concat "; " (List.map Char.escaped after))
+  | None ->
+      Printf.printf "Slice not found in the list.\n"
+*)
+let extraire_liste start stop l acc =
+  match first_occ start l with
+  | Some (before,  remaining_after_start) ->
+      (match first_occ stop remaining_after_start with
+       | Some (between, after) ->
+           acc := !acc @ [between];  (* add the list of characters to the accumulation *)
+           after
+       | None -> [])
+  | None -> l
+
+
+let rec slices_between_ter start stop l acc =
+  if List.length l < (List.length start + List.length stop) then
+    !acc
+  else
+    let remaining = extraire_liste start stop l acc in
+    slices_between_ter start stop remaining acc
+
+let slices_between start stop l =
+  if List.length l < List.length start + List.length stop then
+    failwith "The list is too short"
+  else
+    match l with
+    | [] -> failwith "The list is empty"
+    | _ -> slices_between_ter start stop l (ref [])
+(*)
+let () =
+  let start = [3; 2] in
+  let stop = [4; 4] in
+  let l = [1; 1; 2; 3; 3; 1; 4; 1; 2] in
+
+  Printf.printf "Original list: [%s]\n" (String.concat "; " (List.map string_of_int l));
+
   let result = slices_between start stop l in
   Printf.printf "Slices between start and stop: [%s]\n"
-    (String.concat "; " (List.map (fun sublist -> "[" ^ (String.concat "; " (List.map Char.escaped sublist)) ^ "]") result))*)
-(*
-  slices_between [1; 1] [1; 2] [1; 1; 1; 1; 2; 1; 3; 1; 2] = [[1]; []; [2; 1; 3]]
- *)
-
+    (String.concat "; " (List.map (fun sublist -> "[" ^ (String.concat "; " (List.map string_of_int sublist)) ^ "]") result))
+*)
 let cut_genes (strand : dna) : string list =
   if List.length strand = 0 then
     failwith "None"
   else
     let start = [A; T; G] in
-    let stop = [T; A; A] in 
+    let stop = [T; A; A] in
     let gene_lists = slices_between start stop strand in
     List.map string_of_dna gene_lists
-(*test
-let () = 
-  let strand = dna_of_string "ATGCCTGGGCATTGAGATCATTGGCACCCTGCATAAGATGTGTGACTGTAGAGCTCTTCCTGAC..CATGCATAAAGAATGCCAATGGCACAGCCTGGTATCTTTGCCATAAATGGCTCCTGGTGGAGCTGATAGTCACTTTCCATAATTAATGCATGGTGGTGGAGTTATTCTTGACTTTCCATAA" in 
-   Appel à la fonction cut_genes 
-  let genes_as_dna = cut_genes strand in 
-   affichage des gènes sous forme de séquences d'ADN 
+(*
+let () =
+  let strand =
+    dna_of_string
+      "ATGCCTGGGCATTGAGATCATTGGCACCCTGCATAAGATGTGTGACTGTAGAGCTCTTCCTGAC..CATGCATAAAGAATGCCAATGGCACAGCCTGGTATCTTTGCCATAAATGGCTCCTGGTGGAGCTGATAGTCACTTTCCATAATTAATGCATGGTGGTGGAGTTATTCTTGACTTTCCATAA"
+  in
+  (* Appel à la fonction cut_genes 
+  let genes_as_dna = cut_genes strand in
+  (* affichage des gènes sous forme de séquences d'ADN 
   Printf.printf "Genes as DNA sequences: [%s]\n"
     (String.concat "; \n" genes_as_dna);
-  *)
-
+*)
 (*---------------------------------------------------------------------------*)
 (*                          CONSENSUS SEQUENCES                              *)
 (*---------------------------------------------------------------------------*)
