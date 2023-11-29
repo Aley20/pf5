@@ -112,14 +112,15 @@ let slices_between start stop l =
     match l with
     | [] -> failwith "EMPTY"
     | _ -> slices_between_ter start stop l (ref [])
-let cut_genes (strand : dna) : string list =
+             
+let cut_genes (strand : dna) : dna list =
   if List.length strand = 0 then
-    failwith "NONE"
+    failwith "None"
   else
     let start = [A; T; G] in
     let stop = [T; A; A] in
-    let gene_lists = slices_between start stop strand in
-    List.map string_of_dna gene_lists
+    slices_between start stop strand
+
 (*---------------------------------------------------------------------------*)
 (*                          CONSENSUS SEQUENCES                              *)
 (*---------------------------------------------------------------------------*)
