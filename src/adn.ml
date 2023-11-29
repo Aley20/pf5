@@ -99,12 +99,11 @@ let extraire_liste start stop l acc =
 
 let slices_between start stop l =
   if List.length l < List.length start + List.length stop then
-    failwith "SHORT"
-  else if first_occ start l=None || first_occ stop l =None then failwith "None"
+    failwith "The list is too short"
   else
     match l with
-    | [] -> failwith "EMPTY"
-    | _ -> slices_between_ter start stop l (ref [])
+    | [] -> failwith "The list is empty"
+    | _ -> slices_between_ter start stop l (ref []) 
              
 let cut_genes (strand : dna) : dna list =
   if List.length strand = 0 then
