@@ -97,21 +97,10 @@ let extraire_liste start stop l acc =
        | None -> [])
   | None -> l
 
-
-let slices_between start stop l =
-  if List.length l < List.length start + List.length stop then
-    failwith "None"
-  else
-    match l with
-    | [] -> failwith "None"
-    | _ -> let result =slices_between_ter start stop l (ref []) in
-        match result with 
-        |[]->failwith "None" 
-        |_->result
-             
 let slices_between start stop l =
   if List.length l < List.length start + List.length stop then
     failwith "SHORT"
+  else if first_occ start l=None or first_occ stop l =None then failwith "None"
   else
     match l with
     | [] -> failwith "EMPTY"
