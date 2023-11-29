@@ -98,13 +98,17 @@ let extraire_liste start stop l acc =
   | None -> l
 
 
-let rec slices_between_ter start stop l acc =
-  if List.length l < (List.length start + List.length stop) then
-    !acc
+let slices_between start stop l =
+  if List.length l < List.length start + List.length stop then
+    failwith "None"
   else
-    let remaining = extraire_liste start stop l acc in
-    slices_between_ter start stop remaining acc
-
+    match l with
+    | [] -> failwith "None"
+    | _ -> let result =slices_between_ter start stop l (ref []) in
+        match result with 
+        |[]->failwith "None" 
+        |_->result
+             
 let slices_between start stop l =
   if List.length l < List.length start + List.length stop then
     failwith "SHORT"
