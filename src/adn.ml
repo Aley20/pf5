@@ -105,7 +105,8 @@ let rec slices_between_ter start stop l acc =
     let remaining = extraire_liste start stop l acc in
     slices_between_ter start stop remaining acc
 
-let slices_between start stop l =
+let slices_between 
+(start : 'a list) (stop : 'a list) (list : 'a list) : 'a list list =
   if List.length l < List.length start + List.length stop then
     failwith "The list is too short"
   else
@@ -114,12 +115,18 @@ let slices_between start stop l =
     | _ -> slices_between_ter start stop l (ref [])  
 
 let cut_genes (strand : dna) : dna list =
-if List.length strand = 0 then
-    failwith "None"
-  else
-   let genes= slices_between [A; T; G] [T; A; A] strand in 
-let genesmod=List.iter (fun lst -> List.iter (fun x -> dna_of_string (string_of_base genes)) lst) lists
+  if List.length strand = 0 then
+      failwith "None"
+    else
+     let genes= slices_between [A; T; G] [T; A; A] strand in 
+     let genesmod=List.iter (fun lst -> List.iter (fun x -> dna_of_string (string_of_base genes)) lst) lists
    genesmod
+
+
+
+  (*let genesmod=List.flatten(List.map (fun x -> List.map dna_of_string [string_of_base x]) genes )  in 
+  genesmod *)
+  
 
 
 

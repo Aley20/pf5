@@ -1,5 +1,0 @@
-(tests
-  (names test)
-  (libraries fmt alcotest pf5)
-  (flags (:standard -open Pf5))
-)
