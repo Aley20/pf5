@@ -87,31 +87,41 @@ let first_occ slice l =
       None
   in
   loop 0
-let extraire_liste start stop l acc =
+let rec extraire_liste start stop l acc =
   match first_occ start l with
-  | Some (before,  remaining_after_start) ->
+  | Some (before, remaining_after_start) ->
       (match first_occ stop remaining_after_start with
        | Some (between, after) ->
-           acc := !acc @ [between];  (* rajouter la liste des accs *)
-           after
+           let new_start = after 
+           in
+           acc := !acc @ between;  
+           extraire_liste new_start stop l acc
        | None -> [])
   | None -> l
+let rec slices_between_ter start stop l acc =
+  if List.length l < (List.length start + List.length stop) then
+    !acc  
+  else
+    let remaining = extraire_liste start stop l acc in
+    slices_between_ter start stop remaining acc
 
 let slices_between start stop l =
   if List.length l < List.length start + List.length stop then
     failwith "The list is too short"
   else
     match l with
-    | [] -> failwith "The list is empty"
-    | _ -> slices_between_ter start stop l (ref []) 
-             
+    | [] -> []
+    | _ -> slices_between_ter start stop l (ref [])  
+
 let cut_genes (strand : dna) : dna list =
-  if List.length strand = 0 then
+if List.length strand = 0 then
     failwith "None"
   else
-    let start = [A; T; G] in
-    let stop = [T; A; A] in
-    slices_between start stop strand
+   let genes= slices_between [A; T; G] [T; A; A] strand in 
+let genesmod=List.iter (fun lst -> List.iter (fun x -> dna_of_string (string_of_base genes)) lst) lists
+   genesmod
+
+
 
 (*---------------------------------------------------------------------------*)
 (*                          CONSENSUS SEQUENCES                              *)
