@@ -65,7 +65,8 @@ let rec cut_prefix (slice : 'a list) (list : 'a list) : 'a list option =
   | (x1 :: y1, x2 :: y2) when x1=x2 -> cut_prefix y1 y2 
   | (_,_) -> None
 
-let split_at_position pos lst =
+
+ let split_at_position pos lst =
   let rec aux acc n = function
     | [] -> (List.rev acc, [])
     | h :: t as l ->
@@ -118,12 +119,13 @@ let slices_between start stop l =
 
 let cut_genes (strand : dna) : dna list =
   if List.length strand = 0 then
-    failwith "None"
+    []
   else
     let start = [A; T; G] in
     let stop = [T; A; A] in 
     let gene_lists = slices_between start stop strand in
     gene_lists
+
 (*---------------------------------------------------------------------------*)
 (*                          CONSENSUS SEQUENCES                              *)
 (*---------------------------------------------------------------------------*)
