@@ -1,7 +1,8 @@
 open Regex_base
 
 let rec repeat n l =
-  failwith "À compléter"
+  if n<=0 then []
+  else l @ repeat (n-1) l
 
 let rec expr_repeat n e =
   failwith "À compléter"
