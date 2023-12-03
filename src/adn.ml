@@ -87,17 +87,18 @@ let first_occ slice l =
       None
   in
   loop 0
+  
+
 let rec extraire_liste start stop l acc =
   match first_occ start l with
   | Some (before, remaining_after_start) ->
       (match first_occ stop remaining_after_start with
        | Some (between, after) ->
-           let new_start = after 
-           in
-           acc := !acc @ between;  
-           extraire_liste new_start stop l acc
+           acc := !acc @ [between];  (* ajouter la liste de caractères à l'accumulation *)
+           extraire_liste start stop after acc
        | None -> [])
-  | None -> l
+  | None -> []
+
 let rec slices_between_ter start stop l acc =
   if List.length l < (List.length start + List.length stop) then
     !acc  
@@ -105,31 +106,24 @@ let rec slices_between_ter start stop l acc =
     let remaining = extraire_liste start stop l acc in
     slices_between_ter start stop remaining acc
 
-let slices_between 
-(start : 'a list) (stop : 'a list) (list : 'a list) : 'a list list =
+let slices_between start stop l =
   if List.length l < List.length start + List.length stop then
-    failwith "The list is too short"
+    failwith "La liste est trop courte"
   else
     match l with
-    | [] -> []
-    | _ -> slices_between_ter start stop l (ref [])  
+    | [] -> failwith "La liste est vide"
+    | _ -> slices_between_ter start stop l (ref [])
+
+
 
 let cut_genes (strand : dna) : dna list =
   if List.length strand = 0 then
-      failwith "None"
-    else
-     let genes= slices_between [A; T; G] [T; A; A] strand in 
-     let genesmod=List.iter (fun lst -> List.iter (fun x -> dna_of_string (string_of_base genes)) lst) lists
-   genesmod
-
-
-
-  (*let genesmod=List.flatten(List.map (fun x -> List.map dna_of_string [string_of_base x]) genes )  in 
-  genesmod *)
-  
-
-
-
+    failwith "None"
+  else
+    let start = [A; T; G] in
+    let stop = [T; A; A] in 
+    let gene_lists = slices_between start stop strand in
+    gene_lists
 (*---------------------------------------------------------------------------*)
 (*                          CONSENSUS SEQUENCES                              *)
 (*---------------------------------------------------------------------------*)
