@@ -15,7 +15,16 @@ let rec null e =
   failwith "À compléter"
 
 let rec is_finite e =
-  failwith "À compléter"
+  let rec is_finite_helper a b=
+  if List.mem b a then false else
+    match b with
+    | Eps -> true
+    | Base _ -> true
+    | Joker -> true
+    | Concat (x1,x2) -> is_finite_helper a x1 && is_finite_helper a x2
+    | Alt (x1,x2) -> is_finite_helper a x1 && is_finite_helper a x2
+    | Star _ -> false
+  in is_finite_helper [] e 
 
 let product l1 l2 =
   failwith "À compléter"
