@@ -23,7 +23,7 @@ let rec is_finite e =
     | Joker -> true
     | Concat (x1,x2) -> is_finite_helper a x1 && is_finite_helper a x2
     | Alt (x1,x2) -> is_finite_helper a x1 && is_finite_helper a x2
-    | Star _ -> false
+    | Star x -> true
   in is_finite_helper [] e 
 
 let product l1 l2 =
