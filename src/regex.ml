@@ -30,17 +30,19 @@ let rec null e =
     | Alt (left, right) -> null left || null right
     | Joker -> false
 
-let rec is_finite e =
-  let rec is_finite_helper a b=
+let rec aux a b=
   if List.mem b a then false else
     match b with
     | Eps -> true
     | Base _ -> true
     | Joker -> true
-    | Concat (x1,x2) -> is_finite_helper a x1 && is_finite_helper a x2
-    | Alt (x1,x2) -> is_finite_helper a x1 && is_finite_helper a x2
-    | Star x -> true
-  in is_finite_helper [] e 
+    | Concat (x1,x2) -> aux a x1 && aux a x2
+    | Alt (x1,x2) -> aux a x1 && aux a x2
+    | Star x -> is_empty x
+
+let rec is_finite e =
+  aux [] e
+  
 
 let product l1 l2 =
   let rec aux l1 l2 acc =
