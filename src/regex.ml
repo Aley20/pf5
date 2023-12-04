@@ -43,7 +43,15 @@ let rec is_finite e =
   in is_finite_helper [] e 
 
 let product l1 l2 =
-  failwith "À compléter"
+  let rec aux l1 l2 acc =
+    match l1 with
+    | [] -> acc
+    | head_a :: tail_a ->
+      let product_with_head = List.map (fun x -> head_a @ x) l2 in
+      let updated_acc = acc @ product_with_head in
+      aux tail_a l2 updated_acc
+  in
+  aux l1 l2 []
 
 let enumerate alphabet e =
   failwith "À compléter"
