@@ -9,10 +9,26 @@ let rec expr_repeat n e =
   else Concat (e,expr_repeat (n-1) e)
 
 let rec is_empty e =
-  failwith "À compléter"
+   match e with
+  | Eps -> true
+  |Star (Eps)->true
+  |Concat(Eps,Eps)->true
+  | Concat (left, right) -> is_empty left && is_empty right
+  | Star x -> is_empty x 
+  | Base _ -> false
+  | Joker -> false  
+  | Alt (left, right) -> is_empty left && is_empty right
 
 let rec null e =
-  failwith "À compléter"
+  if is_empty e then true
+  else
+    match e with
+    | Eps -> true
+    | Star exp -> true 
+    | Concat (a, b) -> null a && null b
+    | Base _ -> false
+    | Alt (left, right) -> null left || null right
+    | Joker -> false
 
 let rec is_finite e =
   let rec is_finite_helper a b=
