@@ -70,5 +70,16 @@ let rec alphabet_expr e =
 type answer =
   Infinite | Accept | Reject
 
-let accept_partial e w =
-  failwith "À compléter"
+let rec contains_word expr word =
+  match expr with
+  | Eps -> List.mem [] [word]  (* Note: Encapsulate 'word' in a list *)
+  | Base a -> List.mem [a] [word]  (* Note: Encapsulate 'word' in a list *)
+  | Joker -> true
+  | Concat (e1, e2) -> contains_word e1 word && contains_word e2 word
+  | Alt (e1, e2) -> contains_word e1 word || contains_word e2 word
+  | Star a -> not (is_finite a)
+
+let accept_partial e w = 
+  if contains_word e w then Accept
+  else if not (is_finite e) then Infinite
+  else Reject
