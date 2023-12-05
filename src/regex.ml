@@ -100,10 +100,14 @@ let rec accept_partial e w =
   | Joker -> Accept
   | Concat _ -> 
     let l=creer_list e in 
+    let check=sont_egales w l in 
     let finite=is_finite e in 
     if finite && w=[] then Reject else
-    if finite && l = w || (List.length w!=List.length l && sont_egales w l && List.hd w=List.hd l) || 
-    (List.length w!=List.length l && sont_egales w l  && List.hd w=List.hd (List.tl l)) 
+    if finite && l = w || (List.length w!=List.length l && check && List.hd w=List.hd l) || 
+    (List.length w!=List.length l && check  && List.hd w=List.hd (List.tl l)) 
      then Accept else Reject
-  | Alt _ -> let l=alphabet_expr e in if sont_egales w l || w=[]  then Accept else Reject
+  | Alt _ -> 
+    let l=alphabet_expr e in
+    let check=sont_egales w l in
+    if check || w=[]  then Accept else Reject
   | Star a -> Infinite
