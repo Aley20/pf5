@@ -59,7 +59,13 @@ let enumerate alphabet e =
   failwith "À compléter"
 
 let rec alphabet_expr e =
-  failwith "À compléter"
+  match e with 
+  | Eps -> []
+  | Base x -> [x]
+  | Joker -> []
+  | Concat (x1,x2) -> union_sorted (alphabet_expr x1) (alphabet_expr x2)
+  | Alt (x1,x2) -> union_sorted (alphabet_expr x1) (alphabet_expr x2)
+  | Star x -> sort_uniq (alphabet_expr x)
 
 type answer =
   Infinite | Accept | Reject
