@@ -98,7 +98,7 @@ let rec accept_partial e w =
   | Base a -> if (List.mem [a] [w]) = true then Accept else Reject
   | Joker -> Accept
   | Concat _ -> let l=creer_list e in if w=[] then Reject else if l = w || (List.length w!=List.length l && sont_egales w l && List.hd w=List.hd l) || 
-    (List.length w!=List.length l && sont_egales w l) 
+    (List.length w!=List.length l && sont_egales w l  && List.hd w=List.hd (List.tl l)) 
      then Accept else Reject
   | Alt _ -> let l=creer_list e in if sont_egales l w || w=[]  then Accept else Reject
   | Star a -> Infinite
