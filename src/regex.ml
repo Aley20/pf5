@@ -67,8 +67,10 @@ let rec alphabet_expr e =
   | Alt (x1,x2) -> union_sorted (alphabet_expr x1) (alphabet_expr x2)
   | Star x -> sort_uniq (alphabet_expr x)
 
+
 type answer =
   Infinite | Accept | Reject
+
 
 let rec creer_list e=
   match e with 
@@ -79,12 +81,21 @@ let rec creer_list e=
   | Alt (x1,x2) -> creer_list x1 @ creer_list x2
   | Star x -> creer_list x
 
+let rec sont_egales liste1 liste2 =
+  match liste1 with
+  | [] -> true
+  | hd :: tl ->
+    if not (List.mem hd liste2) then
+      false
+    else
+      sont_egales tl liste2
+  
+
 let rec accept_partial e w = 
   match e with 
   | Eps -> if (List.mem [] [w]) = true then Accept else Reject
   | Base a -> if (List.mem [a] [w]) = true then Accept else Reject
   | Joker -> Accept
-  | Concat _ -> let l=creer_list e in if List.sort compare l = List.sort compare w then Accept else Reject
-  | Alt _ -> let l=creer_list e in if List.sort compare l = List.sort compare w || 
-                                   (l!=[] && w=[]) then Accept else Reject
+  | Concat _ -> let l=creer_list e in if l = w || (sont_egales w l && List.hd w=List.hd l) then Accept else Reject
+  | Alt _ -> let l=creer_list e in if sont_egales l w || w=[]  then Accept else Reject
   | Star a -> Infinite
