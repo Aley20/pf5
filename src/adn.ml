@@ -191,10 +191,6 @@ let rec consensus (list : 'a list) : 'a consensus =
       | [(value,count)] -> if count = List.length list then Full value else if count=0 then No_consensus else Partial (value,count)
       | _ -> No_consensus
 
-(*let u=max_occurrence_info ['a';'b';'a';'c';'c';'a']
-let s=sort_and_check_max u
-let p=consensus ['a';'b';'a';'c';'c';'a']
-*)
 (*
    consensus [1; 1; 1; 1] = Full 1
    consensus [1; 1; 1; 2] = Partial (1, 3)
@@ -216,12 +212,6 @@ let p=consensus ['a';'b';'a';'c';'c';'a']
         | lists -> transpose_aux (List.map List.hd lists :: acc) (List.map List.tl lists)
       in
       transpose_aux [] lst
-    
-    (* Utilisation *)
-    (*let input_list = [["x0"; "x1"; "x2"]; ["y0"; "y1"; "y2"]; ["z0"; "z1"; "z2"]];;
-    let i=[["a";"c";"g";"t"]]
-    let rr=transpose_lists i
-    let result = transpose_lists input_list;;*)
 
     let rec consensus_sequence (ll : 'a list list) : 'a consensus list =
       let transposed_lists = transpose_lists ll in
@@ -231,22 +221,9 @@ let p=consensus ['a';'b';'a';'c';'c';'a']
       in
       process_columns [] transposed_lists
     ;;
-    
-
-  (*let c=consensus ["a"]
-  let a=transpose_lists [["a";"c";"g";"t"]]
-  let e=consensus_sequence [["a";"c";"g";"t"]]
-  let aa=transpose_lists [["a";"a";"a";"a"];["a";"a";"a";"t"];["a";"a";".";"."]]
-  let ee=consensus_sequence [["a";"a";"a";"a"];["a";"a";"a";"t"];["a";"a";".";"."]]
-  *)
+  
                      (*
  = [Full 1; Partial (1, 3); No_consensus; Partial (2, 3)]
 
  consensus_sequence [[]; []; []] = []
  *)
-
-(* Utilisation *)
-(*let input_list = [["x0x1x2"]; ["y0y1y2"]; ["z0z1z2"]];;
-let result = transpose_lists input_list;;
-*)
-
