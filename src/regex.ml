@@ -80,6 +80,7 @@ let rec creer_list e=
   | Concat (x1,x2) -> creer_list x1 @ creer_list x2
   | Alt (x1,x2) -> creer_list x1 @ creer_list x2
   | Star x -> creer_list x
+  
 
 let rec sont_egales liste1 liste2 =
   match liste1 with
@@ -96,6 +97,6 @@ let rec accept_partial e w =
   | Eps -> if (List.mem [] [w]) = true then Accept else Reject
   | Base a -> if (List.mem [a] [w]) = true then Accept else Reject
   | Joker -> Accept
-  | Concat _ -> let l=creer_list e in if l = w || (sont_egales w l && List.hd w=List.hd l) then Accept else Reject
+  | Concat _ -> let l=creer_list e in if l = w || (List.length w!=List.length l && sont_egales w l && List.hd w=List.hd l) then Accept else Reject
   | Alt _ -> let l=creer_list e in if sont_egales l w || w=[]  then Accept else Reject
   | Star a -> Infinite
