@@ -71,7 +71,7 @@ let rec alphabet_expr e =
 type answer =
   Infinite | Accept | Reject
 
-
+(* Création d'une liste sans la trié avec doublons *)
 let rec creer_list e=
   match e with 
   | Eps->[]
@@ -82,6 +82,7 @@ let rec creer_list e=
   | Star x -> creer_list x
   
 
+(* Vérifie que chaque éléments de liste1 est dans liste2 *)
 let rec sont_egales liste1 liste2 =
   match liste1 with
   | [] -> true
