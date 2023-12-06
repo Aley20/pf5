@@ -55,8 +55,33 @@ let product l1 l2 =
   in
   aux l1 l2 []
 
-let enumerate alphabet e =
-  failwith "À compléter"
+let rec enumerate alphabet e =
+  if not (is_finite e) then None
+  else if null e then Some [[]] 
+  else
+    let rec enumerate_helper acc current_list = function
+      | [] ->
+        if current_list = [] || List.length current_list > 1 then acc
+        else List.rev (current_list :: acc)
+      | x :: xs ->
+        match e with
+        | Joker -> enumerate_helper (List.rev (x :: current_list) :: acc) [] xs
+        | Base c when x = c -> enumerate_helper (List.rev (x :: current_list) :: acc) [] xs
+        | Base _ -> enumerate_helper acc (current_list @ [x]) xs
+        | _ -> enumerate_helper (List.rev (x :: current_list) :: acc) [] xs
+    in
+    match e with
+    | Joker -> Some (enumerate_helper [] [] alphabet)
+    | Base _ -> Some (enumerate_helper [] [] alphabet)
+    | Concat (e1, e2) ->
+      (match (enumerate alphabet e1), (enumerate alphabet e2) with
+      | Some l1, Some l2 -> Some (product l1 l2)
+      | _, _ -> None)
+    | Alt (e1, e2) ->
+      (match (enumerate alphabet e1), (enumerate alphabet e2) with
+      | Some l1, Some l2 -> Some (union_sorted l1 l2)
+      | _, _ -> None)
+    | _ -> None 
 
 let rec alphabet_expr e =
   match e with 
