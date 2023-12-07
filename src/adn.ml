@@ -17,8 +17,6 @@ let string_of_base (b : base) : string =
   | T -> "T"
   | WC -> "."
 
-
-(* explode a string into a char list *)
 let explode (str : string) : char list =
   List.init (String.length str) (String.get str)
 
@@ -52,8 +50,6 @@ let string_of_dna (seq : dna) : string =
    de $l$ de la forme $\langle x_i, \dots x_{j}$, o\`u $1 \leq i \leq j\leq n$.
  *)
 
-
-(* if list = pre@suf, return Some suf. otherwise, return None *)
 
 (* 1er cas : Si slice est vide alors list est un suffixe
    2eme cas : Si 1er élément de slice(x1) est égal au 1er élément de list(x2) alors on va réappeler récursivement
@@ -162,12 +158,6 @@ type 'a consensus = Full of 'a | Partial of 'a * int | No_consensus
         )[] result
 
 
-(*
-   type base = A | C | G | T | WC (* wildcard *)
-
-let a= max_occurrence_info ['a';'b';'c';'c';'b';'a']
-let b=max_occurrence_info [A; A; G; G; T] 
-*)
 
 (* va trié notre liste de tuples  *)
 
